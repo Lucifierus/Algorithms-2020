@@ -2,8 +2,8 @@ package lesson1;
 
 import kotlin.NotImplementedError;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -134,8 +134,53 @@ public class JavaTasks {
      * 2
      * 2
      */
-    static public void sortSequence(String inputName, String outputName) {
-        throw new NotImplementedError();
+    static public void sortSequence(String inputName, String outputName) throws IOException {
+        //Трудоемкость = O(N)
+        //Ресурсоемкость = O(N)
+        //N - количество строк в inputName
+        Map<Integer, Integer> numbers = new HashMap<>(); //число - повторы
+        int maximumRepeat = 0;                           //максимальное повторение
+        int minMaxRep = 0;                               //самое маленькое среди наиболее повторяющихся
+        List<Integer> sequence = new ArrayList<>();      //последовательность
+        BufferedReader reader = new BufferedReader(new FileReader(inputName));
+
+        while (true) {
+            String line = reader.readLine();
+            if (line == null) break;
+
+            Integer temp = Integer.parseInt(line);
+            sequence.add(temp); //добавляю в последовательность
+
+            if (!numbers.containsKey(temp)) {
+                numbers.put(temp, 1);
+            } else numbers.put(temp, numbers.get(temp) + 1);
+
+            if ((temp < minMaxRep && numbers.get(temp) == maximumRepeat) || numbers.get(temp) > maximumRepeat) {
+                maximumRepeat = numbers.get(temp);
+                minMaxRep = temp;
+            }
+        }
+
+        List<Integer> end = new ArrayList<>();   //то, что будет записано в самом конце
+        List<Integer> start = new ArrayList<>(); //все оставшееся - в начале
+        for (Integer element : sequence) {
+            if (element == minMaxRep) {
+                end.add(element);
+            } else start.add(element);
+        }
+
+        //запись
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
+        for (Integer element : start) {
+            writer.write(element.toString());
+            writer.newLine();
+        }
+
+        for (Integer element : end) {
+            writer.write(element.toString());
+            writer.newLine();
+        }
+        writer.close();
     }
 
     /**
