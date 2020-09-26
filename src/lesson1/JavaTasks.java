@@ -2,6 +2,9 @@ package lesson1;
 
 import kotlin.NotImplementedError;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SuppressWarnings("unused")
 public class JavaTasks {
     /**
@@ -150,6 +153,22 @@ public class JavaTasks {
      * Результат: second = [1 3 4 9 9 13 15 20 23 28]
      */
     static <T extends Comparable<T>> void mergeArrays(T[] first, T[] second) {
-        throw new NotImplementedError();
+        //Трудоемкость = O(N)
+        //Ресурсоемкость = O(N)
+        //N - длина второго массива
+        int endFirst = first.length;
+        int endSecond = second.length;
+        int secondI = endFirst; //индекс второго
+        int firstI = 0;         //индекс первого
+        for (int i = 0; i < second.length; i++) {
+            //если конец первого   || второй не кончился и во втором элемент меньше чем в первом
+            if (firstI == endFirst || secondI != endSecond && (Integer) second[secondI] <= (Integer) first[firstI]) {
+                second[i] = second[secondI];
+                secondI++;
+            } else {
+                second[i] = first[firstI];
+                firstI++;
+            }
+        }
     }
 }
