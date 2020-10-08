@@ -111,7 +111,22 @@ public class JavaAlgorithms {
      * Справка: простым считается число, которое делится нацело только на 1 и на себя.
      * Единица простым числом не считается.
      */
-    static public int calcPrimesNumber(int limit) {
-        throw new NotImplementedError();
+    static public int calcPrimesNumber(int limit) { //решето Эратосфена
+        //Трудоемкость = O(limit*log(log(limit)))
+        //Ресурсоемкость = O(limit)
+        int answer = 0;
+        if (limit > 1) {
+            boolean[] primes = new boolean[limit + 1];
+            Arrays.fill(primes, true); //заполнил все на true
+            for (int i = 2; i <= limit; i++) {
+                if (primes[i]) {
+                    for (int j = 2; i * j <= limit; j++) {
+                        primes[i * j] = false;
+                    }
+                    answer++;
+                }
+            }
+        }
+        return answer;
     }
 }
