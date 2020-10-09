@@ -97,8 +97,39 @@ public class JavaAlgorithms {
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
      */
-    static public String longestCommonSubstring(String firs, String second) {
-        throw new NotImplementedError();
+    static public String longestCommonSubstring(String first, String second) {
+        //Трудоемкость = O(N^2)
+        //Ресурсоемкость = O(N)
+        int firstLen = first.length();
+        int secondLen = second.length();
+        int[][] matrix = new int[firstLen][secondLen];
+        int maxMatch = 0;
+
+        for (int y = 0; y < firstLen; y++) { //заполнение матрицы
+            for (int x = 0; x < secondLen; x++) {
+                if (first.charAt(y) == second.charAt(x)) {
+                    if (y == 0 || x == 0) {
+                        matrix[y][x] = 1;
+                    } else {
+                        matrix[y][x] = matrix[y - 1][x - 1] + 1;
+                    }
+                }
+            }
+        }
+
+        int end = 0;
+        for (int y = 0; y < firstLen; y++) {
+            for (int x = 0; x < secondLen; x++) {
+                if (matrix[y][x] > maxMatch) {
+                    end = y;
+                    maxMatch = matrix[y][x];
+                }
+            }
+        }
+
+        int beginIndex = end - maxMatch + 1;
+        int endIndex = end + 1;
+        return first.substring(beginIndex, endIndex);
     }
 
     /**
