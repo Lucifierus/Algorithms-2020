@@ -1,7 +1,6 @@
 package lesson1;
 
 import kotlin.NotImplementedError;
-
 import java.io.*;
 import java.util.*;
 
@@ -105,6 +104,13 @@ public class JavaTasks {
         //Трудоемкость = O(N)
         //Ресурсоемкость = O(N)
         //N - количество строк в inputName
+
+        ////////////КОНСТАНТЫ//////////
+        int minTemp = 2730;
+        int maxTemp = 5000;
+        int limit = minTemp + maxTemp;
+        ///////////////////////////////
+
         List<Integer> temperatures = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new FileReader(inputName));
         double temp;
@@ -114,17 +120,17 @@ public class JavaTasks {
 
             temp = Double.parseDouble(line);
             temp = temp * 10;
-            temp = temp + 2730;
+            temp = temp + minTemp;
             temperatures.add((int) temp);
         }
         int[] answer = new int[temperatures.size()];
         for (int i = 0; i < temperatures.size(); i++) answer[i] = temperatures.get(i);
-        answer = Sorts.countingSort(answer, 2730 + 5000);
+        answer = Sorts.countingSort(answer, limit);
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
         for (int element : answer) {
             temp = element;
-            temp = temp - 2730;
+            temp = temp - minTemp;
             temp = temp / 10;
             writer.write(String.valueOf(temp));
             writer.newLine();
