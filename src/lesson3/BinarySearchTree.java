@@ -99,10 +99,46 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      *
      * Средняя
      */
+    //Ресурсоемкость = O(1) = const
+    //Трудоемкость = O(logh) - лучший случай
+    //Трудоемкость = O(h)    - худший случай
+    //h - Высота дерева
     @Override
     public boolean remove(Object o) {
-        // TODO
-        throw new NotImplementedError();
+        if (!contains(o)) return false; //если не содержит элемент
+        if (root == null) return false; //если корень пустой
+        T removeValue = (T) o;          //значение удаляемого узла
+        root = removeSubFunc(root, removeValue);
+        size--;
+        return true;
+    }
+    private Node<T> removeSubFunc(Node<T> current, T removeValue) {
+        if (current == null) return null;
+        int comparison = removeValue.compareTo(current.value);
+
+        if (comparison > 0) { //к правому потомку
+            current.right = removeSubFunc(current.right, removeValue);
+            return current;
+        }
+        if (comparison < 0) { //к левому потомку
+            current.left = removeSubFunc(current.left, removeValue);
+            return current;
+        }
+        if (current.right == null && current.left == null) return null; //когда нет потомков, узел просто удаляется
+        if (current.right == null) return current.left; //когда правого потомка нет, заменяем узел левым потомком
+        if (current.left == null) return current.right; //когда левого потомка нет, заменяем узел правым потомком
+
+        //когда есть оба потомка, нужно заменить элемент на минимальный элемент из правого поддерева
+        Node<T> tempNode = current.right;
+        while (tempNode.left != null) tempNode = tempNode.left; //поиск минимального элемента в правом поддереве
+        Node<T> minNode = new Node<>(tempNode.value);
+
+        minNode.left = current.left;
+        minNode.right = current.right;
+        current = minNode;
+        current.right = removeSubFunc(current.right, current.value);
+
+        return current;
     }
 
     @Nullable
