@@ -113,7 +113,6 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         return true;
     }
     private Node<T> removeSubFunc(Node<T> current, T removeValue) {
-        if (current == null) return null;
         int comparison = removeValue.compareTo(current.value);
 
         if (comparison > 0) { //к правому потомку
@@ -154,9 +153,20 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     }
 
     public class BinarySearchTreeIterator implements Iterator<T> {
+        List<Node<T>> listOfNodes = new ArrayList<>();
+        Node<T> current;
+        int index = 0;
 
         private BinarySearchTreeIterator() {
-            // Добавьте сюда инициализацию, если она необходима.
+            add(root);
+        }
+
+        private void add(Node<T> parent) {
+            if (parent != null) {
+                if (parent.left != null) add(parent.left);
+                listOfNodes.add(parent);
+                if (parent.right != null) add(parent.right);
+            }
         }
 
         /**
@@ -170,9 +180,10 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          * Средняя
          */
         @Override
+        //Ресурсоемкость = O(1) = const
+        //Трудоемкость = O(1) = const
         public boolean hasNext() {
-            // TODO
-            throw new NotImplementedError();
+            return index < listOfNodes.size();
         }
 
         /**
@@ -188,10 +199,16 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          *
          * Средняя
          */
+        //Ресурсоемкость = O(1)
+        //Трудоемкость = O(n)
+        //n - количество узлов
         @Override
         public T next() {
-            // TODO
-            throw new NotImplementedError();
+            if (listOfNodes.size() == index) throw new NoSuchElementException();
+            Node<T> newCurrent = listOfNodes.get(index);
+            index++;
+            current = newCurrent;
+            return newCurrent.value;
         }
 
         /**
@@ -206,10 +223,15 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          *
          * Сложная
          */
+        //Ресурсоемкость = O(1) = const
+        //Трудоемкость = O(logh) - лучший случай
+        //Трудоемкость = O(h)    - худший случай
+        //h - Высота дерева
         @Override
         public void remove() {
-            // TODO
-            throw new NotImplementedError();
+            if (current == null) throw new IllegalStateException();
+            BinarySearchTree.this.remove(current.value);
+            current = null;
         }
     }
 
