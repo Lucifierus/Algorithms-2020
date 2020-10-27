@@ -101,7 +101,7 @@ public class JavaAlgorithms {
      */
     static public String longestCommonSubstring(String first, String second) {
         //Трудоемкость = O(N^2)
-        //Ресурсоемкость = O(N)
+        //Ресурсоемкость = O(N^2)
         int firstLen = first.length();
         int secondLen = second.length();
         int[][] matrix = new int[firstLen][secondLen];
