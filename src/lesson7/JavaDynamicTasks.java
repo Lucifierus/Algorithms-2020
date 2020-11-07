@@ -18,8 +18,45 @@ public class JavaDynamicTasks {
      * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
      * При сравнении подстрок, регистр символов *имеет* значение.
      */
+    //Трудоемкость = O(N * M)
+    //Ресурсоемкость = O(N * M)
+    //N - длина первой строки
+    //M - длина второй строки
     public static String longestCommonSubSequence(String first, String second) {
-        throw new NotImplementedError();
+        int lengthFirst = first.length() + 1;
+        int lengthSecond = second.length() + 1;
+        int[][] matrix = new int[lengthFirst][lengthSecond];
+        //заполняем матрицу
+        for (int x = 1; x < lengthFirst; x++) {
+            for (int y = 1; y < lengthSecond; y++) {
+                char char1 = first.charAt(x - 1);
+                char char2 = second.charAt(y - 1);
+                if (char1 != char2) {
+                    matrix[x][y] = Math.max(matrix[x - 1][y], matrix[x][y - 1]);
+                } else {
+                    matrix[x][y] = matrix[x - 1][y - 1] + 1;
+                }
+            }
+        }
+        lengthFirst--;
+        lengthSecond--;
+        StringBuilder answer = new StringBuilder();
+        while (lengthFirst != 0 && lengthSecond != 0) {
+            char char1 = first.charAt(lengthFirst - 1);
+            char char2 = second.charAt(lengthSecond - 1);
+            if (char1 == char2) {
+                answer.insert(0, char1);
+                lengthFirst--;
+                lengthSecond--;
+                continue;
+            }
+            if (matrix[lengthFirst - 1][lengthSecond] >= matrix[lengthFirst][lengthSecond - 1]) {
+                lengthFirst--;
+            } else {
+                lengthSecond--;
+            }
+        }
+        return answer.toString();
     }
 
     /**

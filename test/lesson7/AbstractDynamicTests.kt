@@ -4,6 +4,7 @@ import kotlin.test.assertEquals
 
 abstract class AbstractDynamicTests {
     fun longestCommonSubSequence(longestCommonSubSequence: (String, String) -> String) {
+        assertEquals("", longestCommonSubSequence("", ""))
         assertEquals("", longestCommonSubSequence("мой мир", "я"))
         assertEquals("1", longestCommonSubSequence("1", "1"))
         assertEquals("13", longestCommonSubSequence("123", "13"))
@@ -34,6 +35,62 @@ abstract class AbstractDynamicTests {
 Наследник всех своих родных.
                 """.trimIndent()
             ).length, "Answer must have length of $expectedLength2"
+        )
+
+        val expectedLength3 = """Пе т пеа кта сме ил.
+евочи а
+т от а как
+ли ласти.
+от я не р.
+о т пле  .
+о  ына
+тни
+н актк
+ ет оемут ле к""".trimIndent().length
+        assertEquals(
+            expectedLength3, longestCommonSubSequence(
+                """
+Почему ты плачешь? — Так. —
+Плакать так смешно и глупо.
+Зареветь, не кончив супа!
+Отними от глаз кулак!
+
+Если плачешь, есть причина.
+Я отец, и я не враг.
+Почему ты плачешь? — Так. —
+Ну какой же ты мужчина?
+
+Отними от глаз кулак!
+Что за нрав такой? Откуда?
+Рассержусь, и будет худо!
+Почему ты плачешь? — Так.
+                """.trimIndent(),
+                """
+Приехали! Приехали!
+Родители приехали!
+С конфетами, с орехами
+Родители приехали.
+
+Девочки и мальчики
+Прыгают от радости:
+В каждом чемоданчике
+Яблоки и сладости.
+
+Вот для дочки
+Танечки
+В узелочке
+Прянички.
+А вот это пироги,
+Для себя их береги.
+
+Вот для сына
+Петеньки
+Леденцы
+В пакетике.
+Это Пете моему,
+Это больше никому!
+                """.trimIndent()
+            ).length, "Answer must have length of $expectedLength3"
         )
     }
 
