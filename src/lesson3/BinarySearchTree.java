@@ -153,20 +153,21 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     }
 
     public class BinarySearchTreeIterator implements Iterator<T> {
-        List<Node<T>> listOfNodes = new ArrayList<>();
-        Node<T> current;
-        int index = 0;
+        Deque<T> nodes = new ArrayDeque<>();
+        T value;
 
         private BinarySearchTreeIterator() {
-            add(root);
+            if (root != null) {
+                add(root);
+                nodes.removeFirst(); //так как дублируется первый элемент
+            }
         }
 
         private void add(Node<T> parent) {
-            if (parent != null) {
-                if (parent.left != null) add(parent.left);
-                listOfNodes.add(parent);
-                if (parent.right != null) add(parent.right);
-            }
+            if (parent.right != null) add(parent.right);
+            else nodes.addLast(parent.value);
+            if (parent.left != null) add(parent.left);
+            else nodes.addLast(parent.value);
         }
 
         /**
@@ -183,7 +184,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         //Ресурсоемкость = O(1) = const
         //Трудоемкость = O(1) = const
         public boolean hasNext() {
-            return index < listOfNodes.size();
+            return !nodes.isEmpty();
         }
 
         /**
@@ -204,11 +205,12 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         //n - количество узлов
         @Override
         public T next() {
-            if (listOfNodes.size() == index) throw new NoSuchElementException();
-            Node<T> newCurrent = listOfNodes.get(index);
-            index++;
-            current = newCurrent;
-            return newCurrent.value;
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            } else {
+                return value = nodes.pollLast();
+            }
+
         }
 
         /**
@@ -229,9 +231,12 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         //h - Высота дерева
         @Override
         public void remove() {
-            if (current == null) throw new IllegalStateException();
-            BinarySearchTree.this.remove(current.value);
-            current = null;
+            if (value == null || size == nodes.size())
+                throw new IllegalStateException();
+            else {
+                BinarySearchTree.this.remove(value);
+                value = null;
+            }
         }
     }
 
