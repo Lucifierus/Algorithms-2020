@@ -2,8 +2,12 @@ package lesson6;
 
 import kotlin.NotImplementedError;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Set;
+import lesson6.Graph.Vertex;
+import lesson6.Graph.Edge;
 
 @SuppressWarnings("unused")
 public class JavaGraphTasks {
@@ -95,8 +99,74 @@ public class JavaGraphTasks {
      *
      * Эта задача может быть зачтена за пятый и шестой урок одновременно
      */
-    public static Set<Graph.Vertex> largestIndependentVertexSet(Graph graph) {
-        throw new NotImplementedError();
+    //Ресурсоемкость O(V)
+    //Трудоемкость O(V + E)
+    //V - число вершин графа
+    //E - число граней графа
+    public static Set<Vertex> largestIndependentVertexSet(Graph graph) {
+       if (!isCycled(graph)) {
+           Set<Vertex> independent = graph.getVertices();
+           if (independent.isEmpty()) return new HashSet<>();
+
+           Set<Vertex> neighbors;
+           //смотрим каждую вершину графа
+           for (Vertex vertex : graph.getVertices()) {
+               //если вершина является еще независимой
+               if (independent.contains(vertex)) {
+                   neighbors = graph.getNeighbors(vertex);
+                   //убираем всех соседей этой вершины из независимых
+                   for (Vertex element : neighbors) {
+                       independent.remove(element);
+                   }
+               }
+               //поиск максимального наибольшего множества независимых вершин
+               Set<Vertex> initialIndependent = graph.getVertices();
+               //если найденный набор независимых вершин является максимальным
+               if (independent.size() < graph.getVertices().size() - independent.size()) {
+                   //убираем независимые вершины из первоначального множества
+                   for (Vertex element : independent) {
+                       initialIndependent.remove(element);
+                   }
+                   return initialIndependent;
+               }
+           }
+           return independent;
+       }
+       return new HashSet<>();
+    }
+
+    private static boolean isCycled(Graph graph) {
+        Set<Vertex> starts = new HashSet<>();
+        Set<Vertex> ends = new HashSet<>();
+        Set<Edge> edges = graph.getEdges();
+
+        //для каждой ребра заполняем массив
+        for (Edge edge : edges) {
+            Vertex start = edge.getBegin();
+            Vertex end = edge.getEnd();
+
+            //если есть общие вершины в множествах - зациклен
+            boolean logic1 = starts.contains(end) && ends.contains(start);
+            boolean logic2 = starts.contains(start) && ends.contains(end);
+            if (logic1 || logic2) return true;
+
+            //конец ребра есть уже в начале, добавляем начало в оба множества
+            if (starts.contains(end)) {
+                starts.add(start);
+                ends.add(start);
+            }
+            //начало ребра есть уже в конце, добавляем конец в оба множества
+            if (ends.contains(start)) {
+                starts.add(end);
+                ends.add(end);
+            }
+            //если ребро еще не проверили
+            if (!starts.contains(start) && !ends.contains(end)) {
+                starts.add(start);
+                ends.add(end);
+            }
+        }
+        return false;
     }
 
     /**
@@ -119,8 +189,39 @@ public class JavaGraphTasks {
      *
      * Ответ: A, E, J, K, D, C, H, G, B, F, I
      */
+    //Ресурсоемкость O(V!)
+    //Трудоемкость O(V!)
+    //V - число вершин графа
     public static Path longestSimplePath(Graph graph) {
-        throw new NotImplementedError();
+        Set<Vertex> allVertices = graph.getVertices(); //все вершины
+        if (allVertices.isEmpty()) return new Path(); //если вершин нет
+        Path answer = new Path(allVertices.iterator().next()); //самый длинный маршрут
+
+        PriorityQueue<Path> queue = new PriorityQueue<>();
+        for (Vertex element : allVertices) { //добавляем все вершины в очередь
+            queue.add(new Path(element));
+        }
+
+        int maxLen = 0;
+        do {
+            Path path = queue.poll(); //из начала очереди
+            assert path != null;
+
+            if (path.getLength() >= maxLen) { //если нашли путь длиннее, записываем в ответ
+                answer = path;
+                maxLen = path.getLength();
+            }
+
+            List<Vertex> vertices = path.getVertices();
+            Vertex temp = vertices.get(vertices.size() - 1);
+            Set<Vertex> neighbors = graph.getNeighbors(temp); //получаем соседей
+
+            for (Vertex element : neighbors) { //проходимся по соседям и добавляем новые пути
+                if (!path.contains(element)) queue.add(new Path(path, graph, element)); //previous, graph, next
+            }
+
+        } while (!queue.isEmpty());
+        return answer;
     }
 
 
