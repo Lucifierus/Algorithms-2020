@@ -2,10 +2,8 @@ package lesson6;
 
 import kotlin.NotImplementedError;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
+
 import lesson6.Graph.Vertex;
 import lesson6.Graph.Edge;
 
@@ -106,7 +104,7 @@ public class JavaGraphTasks {
     public static Set<Vertex> largestIndependentVertexSet(Graph graph) {
        if (!isCycled(graph)) {
            Set<Vertex> independent = graph.getVertices();
-           if (independent.isEmpty()) return new HashSet<>();
+           if (independent.isEmpty()) return Collections.emptySet();
 
            Set<Vertex> neighbors;
            //смотрим каждую вершину графа
@@ -132,7 +130,7 @@ public class JavaGraphTasks {
            }
            return independent;
        }
-       return new HashSet<>();
+       return Collections.emptySet();
     }
 
     private static boolean isCycled(Graph graph) {
@@ -197,7 +195,7 @@ public class JavaGraphTasks {
         if (allVertices.isEmpty()) return new Path(); //если вершин нет
         Path answer = new Path(allVertices.iterator().next()); //самый длинный маршрут
 
-        PriorityQueue<Path> queue = new PriorityQueue<>();
+        Queue<Path> queue = new ArrayDeque<>();
         for (Vertex element : allVertices) { //добавляем все вершины в очередь
             queue.add(new Path(element));
         }
