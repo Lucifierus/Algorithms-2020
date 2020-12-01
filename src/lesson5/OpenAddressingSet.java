@@ -1,13 +1,13 @@
 package lesson5;
 
-import kotlin.NotImplementedError;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
 
 public class OpenAddressingSet<T> extends AbstractSet<T> {
+
+    private enum Status {Removed}
 
     private final int bits;
 
@@ -67,7 +67,7 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
         int startingIndex = startingIndex(t);
         int index = startingIndex;
         Object current = storage[index];
-        while (current != null) {
+        while (current != null && current != Status.Removed) {
             if (current.equals(t)) {
                 return false;
             }
@@ -93,9 +93,26 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      *
      * Средняя
      */
+    //Трудоемкость = O(capacity)
+    //Ресурсоемкость = O(1)
     @Override
     public boolean remove(Object o) {
-        return super.remove(o);
+        int startingIndex = startingIndex(o);
+        int i = startingIndex;
+        Object current = storage[i];
+
+        while (current != null) {
+            if (current.equals(o)) {  //удаляем элемент, уменьшаем размер
+                storage[i] = Status.Removed;
+                size--;
+                return true;
+            }
+            i = (i + 1) % capacity;
+            if (i == startingIndex) return false;
+            //следующий элемент - current
+            current = storage[i];
+        }
+        return false;
     }
 
     /**
@@ -111,7 +128,50 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        // TODO
-        throw new NotImplementedError();
+        return new OpenAddressingSetIterator();
+    }
+
+    public class OpenAddressingSetIterator implements Iterator <T> {
+
+        Object current = null;
+        private int i = 0;
+        private int previous = -1;
+
+        private OpenAddressingSetIterator() {
+            findNextIndex();
+        }
+        private void findNextIndex() {
+            while (i < capacity && (storage[i] == null || storage[i] == Status.Removed)) {
+                i++;
+            }
+        }
+
+        //Трудоемкость = O(capacity)
+        //Ресурсоемкость = O(1)
+        @Override
+        public T next() {
+            if (!hasNext()) throw new IllegalStateException();
+            current = storage[i];
+            previous = i;
+            i++;
+            findNextIndex();
+            return (T) current;
+        }
+
+        //Трудоемкость = O(1)
+        //Ресурсоемкость = O(1)
+        @Override
+        public void remove() {
+            if (current == null || previous == -1) throw new IllegalStateException();
+            storage[previous] = Status.Removed;
+            size--;
+        }
+
+        //Трудоемкость = O(1)
+        //Ресурсоемкость = O(1)
+        @Override
+        public boolean hasNext() {
+            return i < capacity;
+        }
     }
 }
